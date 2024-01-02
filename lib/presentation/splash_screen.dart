@@ -13,8 +13,11 @@ class SplashScreen extends StatelessWidget {
      _splashBloc.add(SplashCheckToken());
    }
 
+
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: SafeArea(
         child: BlocConsumer<SplashBloc, SplashState>(
@@ -22,9 +25,11 @@ class SplashScreen extends StatelessWidget {
           listener: (context, state) {
             // TODO: implement listener
             if(state is SplashTokenSuccess){
+              _splashBloc.close();
               Get.offAll(()=>JobsHome());
             }
             if(state is SplashTokenFailure){
+              _splashBloc.close();
               Get.offAll(()=>SignUp());
             }
           },

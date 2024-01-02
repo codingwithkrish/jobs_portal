@@ -4,12 +4,17 @@ part of 'jobs_bloc.dart';
 abstract class JobsState {}
 
 class JobsInitial extends JobsState {}
-class JobsLoading extends JobsState{}
+class JobsLoading extends JobsState{
+ final List<Job?>? oldJobs;
+final bool isFirstFetch;
+  JobsLoading(this.oldJobs,{ this.isFirstFetch=false});
+
+}
 class JobsGetFailure extends JobsState{}
 class JobsGetSuccess extends JobsState{
-  final JobsModel jobsModel;
-  List<Job?>? jobs = [];
-  JobsGetSuccess({required this.jobsModel});
+
+  final List<Job?>? jobs;
+  JobsGetSuccess({required this.jobs});
 }
 
 class JobsNoMore extends JobsState{

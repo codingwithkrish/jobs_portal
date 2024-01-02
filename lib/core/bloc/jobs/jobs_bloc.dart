@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
@@ -11,27 +12,31 @@ part 'jobs_event.dart';
 part 'jobs_state.dart';
 
 class JobsBloc extends Bloc<JobsEvent, JobsState> {
+  int page = 1;
   JobsBloc() : super(JobsInitial()) {
     on<GetJobs>(_getJobs);
   }
 
-  FutureOr<void> _getJobs(GetJobs event, Emitter<JobsState> emit) async{
-    event.scrollController.addListener(() async {
-      if(event.scrollController.position.maxScrollExtent==event.scrollController.offset){
-        emit(JobsLoading());
+  FutureOr<void> _getJobs(GetJobs event, Emitter<JobsState> emit) async {
 
-        var result =await JobServices().getJobs(event.page,event.limit);
-        if(result!=null){
-          JobsModel jobsModel = JobsModel.fromJson(jsonDecode(result));
+    if (state is JobsLoading) return;
+    final currentState = state;
 
-          emit(JobsGetSuccess(jobsModel: jobsModel));
-        }else{
-          emit(JobsGetFailure());
-        }
-      }
-    });
-
-
-
+    List<Job?> oldPost = <Job>[];
+    if (currentState is JobsGetSuccess) {
+      oldPost = currentState.jobs!;
+    }
+    emit(JobsLoading(oldPost, isFirstFetch: page == 1));
+    var result = await JobServices().getJobs(page, event.limit);
+    if (result != null) {
+      JobsModel jobsModel = JobsModel.fromJson(jsonDecode(result));
+      page++;
+      log("Page${page}");
+      final jobsNew = (state as JobsLoading).oldJobs;
+      jobsNew!.addAll(jobsModel.jobs!);
+      emit(JobsGetSuccess(jobs: jobsNew));
+    } else {
+      emit(JobsGetFailure());
+    }
   }
 }

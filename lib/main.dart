@@ -9,6 +9,7 @@ import 'package:jobs_portal/core/bloc/splash/splash_bloc.dart';
 import 'package:jobs_portal/presentation/splash_screen.dart';
 
 import 'core/bloc/auth/auth_bloc.dart';
+import 'core/bloc/jobs/create/jobs_create_bloc.dart';
 import 'core/helper/shared_value.dart';
 
 void main() async {
@@ -29,7 +30,12 @@ class MyApp extends StatelessWidget {
     ScreenUtil.init(context);
     return ScreenUtilInit(builder: (context, child) {
       return MultiBlocProvider(
-        providers: [BlocProvider(create: (_) => AuthBloc()),BlocProvider(create: (_) => JobsBloc()),BlocProvider(create: (_)=>SplashBloc())],
+        providers: [
+          BlocProvider(create: (_) => AuthBloc()),
+          BlocProvider(create: (_) => JobsBloc()),
+          BlocProvider(create: (_) => SplashBloc()),
+          BlocProvider(create: (_) => JobsCreateBloc())
+        ],
         child: GetMaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Job Portal',
