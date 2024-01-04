@@ -140,6 +140,8 @@ class JobsHome extends StatelessWidget {
                                               text: listJobs![i]!.location),
                                       workType: listJobs![i]!.workType!,
                                       status: listJobs![i]!.status!,
+                                      id: listJobs[i]!.id!,
+                                      jobsBloc: _jobsBloc,
                                     ));
                               }),
                               SizedBox(

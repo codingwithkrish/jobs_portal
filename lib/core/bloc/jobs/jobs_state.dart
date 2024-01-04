@@ -28,3 +28,16 @@ class JobsDeletedFailed  extends JobsState{
   JobsDeletedFailed({required this.message});
 
 }
+
+class JobsUpdatedSuccess extends JobsState{
+  final String message;
+
+  JobsUpdatedSuccess({required this.message});
+}
+class JobsUpdatedFailure extends JobsState{
+  final String message;
+  JobsUpdatedFailure({required this.message});
+}
+class JobsUpdateLoading extends JobsState{
+
+}

@@ -17,14 +17,7 @@ class JobsCreateBloc extends Bloc<JobsCreateEvent, JobsCreateState> {
     'internship',
     'contract'
   ];
-  List<String> statusDropDownNames=['pending', 'reject', 'interview'];
-  final _dropdownStatusNames = BehaviorSubject<String>.seeded("pending");
-  Stream<String> get outStatusDropdown=>_dropdownStatusNames.stream;
-  Function(String) get inStatusDropdown=>_dropdownStatusNames.sink.add;
-  String get getStatusDropdown =>_dropdownStatusNames.value;
-  void setStatusDropdown(String name){
-    _dropdownStatusNames.value = name;
-  }
+
   final _dropdownValue = BehaviorSubject<String>.seeded("full-time");
   Stream<String> get outDropdown => _dropdownValue.stream;
   Function(String) get inDropdown => _dropdownValue.sink.add;
@@ -36,7 +29,7 @@ class JobsCreateBloc extends Bloc<JobsCreateEvent, JobsCreateState> {
 
   JobsCreateBloc() : super(JobsCreateInitial()) {
     on<CreateJobs>(_createJobs);
-    on<UpdateJobs>(_updateJob);
+
   }
   _createJobs(CreateJobs event, Emitter<JobsCreateState> emit) async{
     emit(CreateJobsLoading());
@@ -48,7 +41,5 @@ class JobsCreateBloc extends Bloc<JobsCreateEvent, JobsCreateState> {
       emit(JobsCreatedFailure());
     }
   }
-  _updateJob(UpdateJobs event,Emitter<JobsCreateState> emit){
 
-  }
 }

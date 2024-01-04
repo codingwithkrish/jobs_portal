@@ -84,6 +84,28 @@ class Request {
     }
   }
 
+  Future<dynamic> updateData(url,
+  body, {
+  Map<String, String?>? queryParams,})async{
+    log(_baseUrl! + _apiVersion! + url);
+    try {
+      http.Response response = await http
+          .patch(Uri.parse(_baseUrl! + _apiVersion! + url),
+          headers: await _getHeaders(), body: jsonEncode(body))
+          .timeout(_timeOut, onTimeout: () async {
+        return await _errorHandling.manageErrors(_timeoutResponse());
+      });
+
+      return await _errorHandling.manageErrors(response);
+    } catch (err) {
+      log(err.toString());
+      if (err is SocketException) {
+        return await _errorHandling.manageErrors(_timeoutResponse());
+      } else {
+        return await _errorHandling.manageErrors(_errorResponse());
+      }
+    }
+  }
   http.Response _timeoutResponse() {
     return http.Response(
       jsonEncode({

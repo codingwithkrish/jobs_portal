@@ -3,29 +3,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../core/bloc/jobs/create/jobs_create_bloc.dart';
+import '../../core/bloc/jobs/jobs_bloc.dart';
 import '../constansts/app_colors.dart';
 import '../constansts/app_dialogs.dart';
+import '../constansts/app_utils.dart';
 import 'jobs_widget.dart';
 
 class JobsUpdate extends StatelessWidget {
-  final JobsCreateBloc _jobsCreateBloc;
-  final String workType,status;
+  final JobsBloc jobsBloc;
+  final String workType,status,id;
   TextEditingController textEditingControllerCompanyName;
   TextEditingController textEditingControllerCompanyPosition;
   TextEditingController textEditingControllerCompanyLocation;
-   JobsUpdate({super.key,required this.textEditingControllerCompanyName,required this.textEditingControllerCompanyPosition,required this.textEditingControllerCompanyLocation, required this.workType, required this.status}) :_jobsCreateBloc=JobsCreateBloc(){
-     _jobsCreateBloc.setDropdown(workType);
-     _jobsCreateBloc.setStatusDropdown(status);
-
-
-   }
+   JobsUpdate({super.key,required this.textEditingControllerCompanyName,required this.textEditingControllerCompanyPosition,required this.textEditingControllerCompanyLocation, required this.workType, required this.status,required this.id,required this.jobsBloc});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: WillPopScope(
         onWillPop: ()async{
-          _jobsCreateBloc.close();
+
           return true;
         },
         child: SafeArea(
@@ -53,7 +50,7 @@ class JobsUpdate extends StatelessWidget {
                     ),
                     Expanded(
                       child: StreamBuilder(
-                          stream: _jobsCreateBloc.outDropdown,
+                          stream: jobsBloc.outDropdown,
                           builder: (context, snapshot) {
                             if (!snapshot.hasData) return Container();
                             return DropdownButtonFormField(
@@ -72,7 +69,7 @@ class JobsUpdate extends StatelessWidget {
                               dropdownColor: AppColors.purpleColor,
                               value: snapshot.data,
                               icon: const Icon(Icons.keyboard_arrow_down),
-                              items: _jobsCreateBloc.dropdownNames
+                              items: jobsBloc.dropdownNames
                                   .map((String items) {
                                 return DropdownMenuItem(
                                   value: items,
@@ -83,7 +80,7 @@ class JobsUpdate extends StatelessWidget {
                                 );
                               }).toList(),
                               onChanged: (value) {
-                                _jobsCreateBloc.setDropdown(value!);
+                                jobsBloc.setDropdown(value!);
                               },
                             );
                           }),
@@ -105,7 +102,7 @@ class JobsUpdate extends StatelessWidget {
                     ),
                     Expanded(
                       child: StreamBuilder(
-                          stream: _jobsCreateBloc.outStatusDropdown,
+                          stream: jobsBloc.outStatusDropdown,
                           builder: (context, snapshot) {
                             if (!snapshot.hasData) return Container();
                             return DropdownButtonFormField(
@@ -124,7 +121,7 @@ class JobsUpdate extends StatelessWidget {
                               dropdownColor: AppColors.purpleColor,
                               value: snapshot.data,
                               icon: const Icon(Icons.keyboard_arrow_down),
-                              items: _jobsCreateBloc.statusDropDownNames
+                              items: jobsBloc.statusDropDownNames
                                   .map((String items) {
                                 return DropdownMenuItem(
                                   value: items,
@@ -135,7 +132,7 @@ class JobsUpdate extends StatelessWidget {
                                 );
                               }).toList(),
                               onChanged: (value) {
-                                _jobsCreateBloc.setStatusDropdown(value!);
+                                jobsBloc.setStatusDropdown(value!);
                               },
                             );
                           }),
@@ -144,20 +141,22 @@ class JobsUpdate extends StatelessWidget {
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 20.h),
-                  child: BlocConsumer<JobsCreateBloc, JobsCreateState>(
-                    bloc: _jobsCreateBloc,
+                  child: BlocConsumer<JobsBloc, JobsState>(
+                    bloc: jobsBloc,
                     listener: (context, state) {
                       // TODO: implement listener
-                      if(state is JobsCreatedSuccess){
-                        _jobsCreateBloc.close();
-                        Get.back();
+                      if (state is JobsUpdatedSuccess) {
+                        AppUtils().showAlertDialog("Update", state.message);
+                      }
+                      if (state is JobsUpdatedFailure) {
+                        AppUtils().showAlertDialog("Error", state.message);
                       }
                     },
                     builder: (context, state) {
-                      if(state is JobsCreatedSuccess){
-                        return const Center(child: Text('Job Created Successfully.'));
+                      if(state is JobsUpdatedSuccess){
+                        return const Center(child: Text('Job Updated Successfully.'));
                       }
-                      if(state is CreateJobsLoading){
+                      if(state is JobsUpdateLoading){
                         return const Center(child: CircularProgressIndicator(),);
                       }
 
@@ -167,12 +166,12 @@ class JobsUpdate extends StatelessWidget {
                                 .text.isNotEmpty &&
                             textEditingControllerCompanyLocation
                                 .text.isNotEmpty) {
-                          _jobsCreateBloc.add(CreateJobs(
+                          jobsBloc.add(UpdateJobs(
                               companyName: textEditingControllerCompanyName.text,
                               positionName:
                               textEditingControllerCompanyPosition.text,
                               locationName:
-                              textEditingControllerCompanyLocation.text));
+                              textEditingControllerCompanyLocation.text, id: id));
                         } else {
                           AppDialogs().errorDialog(
                               "Please Fill All The Details", context);
