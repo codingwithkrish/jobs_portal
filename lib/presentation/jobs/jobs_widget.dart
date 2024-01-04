@@ -44,3 +44,16 @@ Widget buttonCreateJobs(String text,BuildContext context,VoidCallback onTap) {
     ),
   );
 }
+
+Widget buttonDelete(String text,BuildContext context,VoidCallback onTap) {
+  return InkWell(
+    onTap: onTap,
+    child: Container(
+      alignment: Alignment.center,
+      padding: EdgeInsets.symmetric(horizontal: 2.w,vertical: 5.h),
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(color: AppColors.greyColor,borderRadius: BorderRadius.circular(10.w.h)),
+      child: Text(text,style: TextStyle(color: AppColors.textColorDay,fontSize: 15.sp,fontWeight: FontWeight.w700),),
+    ),
+  );
+}

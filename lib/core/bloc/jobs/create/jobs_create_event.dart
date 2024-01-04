@@ -13,3 +13,16 @@ final class CreateJobs extends JobsCreateEvent {
       required this.positionName,
       required this.locationName});
 }
+
+final class UpdateJobs extends JobsCreateEvent {
+  final String companyName;
+  final String positionName;
+  final String locationName;
+  final String id;
+
+  UpdateJobs(
+      {required this.companyName,
+      required this.positionName,
+      required this.locationName,
+      required this.id});
+}

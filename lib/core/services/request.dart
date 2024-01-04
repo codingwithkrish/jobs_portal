@@ -20,18 +20,17 @@ class Request {
     body, {
     Map<String, String?>? queryParams,
   }) async {
-   log(_baseUrl!+_apiVersion!+url);
+    log(_baseUrl! + _apiVersion! + url);
     try {
       http.Response response = await http
-          .post(Uri.parse(_baseUrl!+_apiVersion!+url),
-              headers: await _getHeaders(),body: jsonEncode(body))
+          .post(Uri.parse(_baseUrl! + _apiVersion! + url),
+              headers: await _getHeaders(), body: jsonEncode(body))
           .timeout(_timeOut, onTimeout: () async {
         return await _errorHandling.manageErrors(_timeoutResponse());
       });
 
       return await _errorHandling.manageErrors(response);
     } catch (err) {
-
       log(err.toString());
       if (err is SocketException) {
         return await _errorHandling.manageErrors(_timeoutResponse());
@@ -43,19 +42,39 @@ class Request {
 
   Future<dynamic> getData(String url,
       {Map<String, String?>? queryParams}) async {
-    log(_baseUrl!+_apiVersion!+url);
+    log(_baseUrl! + _apiVersion! + url);
 
     try {
       http.Response response = await http
-          .get(Uri.parse(_baseUrl!+_apiVersion!+url),
-          headers: await _getHeaders())
+          .get(Uri.parse(_baseUrl! + _apiVersion! + url),
+              headers: await _getHeaders())
           .timeout(_timeOut, onTimeout: () async {
         return await _errorHandling.manageErrors(_timeoutResponse());
       });
 
       return await _errorHandling.manageErrors(response);
     } catch (err) {
+      log(err.toString());
+      if (err is SocketException) {
+        return await _errorHandling.manageErrors(_timeoutResponse());
+      } else {
+        return await _errorHandling.manageErrors(_errorResponse());
+      }
+    }
+  }
 
+  Future<dynamic> deleteData(String url,
+      {Map<String, String?>? queryParams}) async {
+    try {
+      http.Response response = await http
+          .delete(Uri.parse(_baseUrl! + _apiVersion! + url),
+              headers: await _getHeaders())
+          .timeout(_timeOut, onTimeout: () async {
+        return await _errorHandling.manageErrors(_timeoutResponse());
+      });
+
+      return await _errorHandling.manageErrors(response);
+    } catch (err) {
       log(err.toString());
       if (err is SocketException) {
         return await _errorHandling.manageErrors(_timeoutResponse());
@@ -90,11 +109,11 @@ class Request {
     // printWrapped(prefs.getString('token') ?? '');
 
     var token = SharedValue().getToken();
-    if(token!.isNotEmpty){
+    if (token!.isNotEmpty) {
       return {
-              "Content-Type": "application/json",
-              'Authorization': "Bearer $token"
-            };
+        "Content-Type": "application/json",
+        'Authorization': "Bearer $token"
+      };
     }
     return {"Content-Type": "application/json"};
   }

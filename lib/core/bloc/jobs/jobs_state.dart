@@ -17,6 +17,14 @@ class JobsGetSuccess extends JobsState{
   JobsGetSuccess({required this.jobs});
 }
 
-class JobsNoMore extends JobsState{
+class JobsDeletedSuccess extends JobsState{
+final String message;
+
+  JobsDeletedSuccess( {required this.message});
+}
+class JobsDeletedFailed  extends JobsState{
+  final String message;
+
+  JobsDeletedFailed({required this.message});
 
 }

@@ -8,7 +8,10 @@ import 'package:jobs_portal/presentation/constansts/app_colors.dart';
 
 import '../../core/bloc/jobs/jobs_bloc.dart';
 import '../../model/jobs_model.dart';
+import '../constansts/app_utils.dart';
 import 'jobs_add.dart';
+import 'jobs_update.dart';
+import 'jobs_widget.dart';
 
 class JobsHome extends StatelessWidget {
   final JobsBloc _jobsBloc;
@@ -42,6 +45,12 @@ class JobsHome extends StatelessWidget {
           bloc: _jobsBloc,
           listener: (context, state) {
             // TODO: implement listener
+            if (state is JobsDeletedSuccess) {
+              AppUtils().showAlertDialog("Deleted", state.message);
+            }
+            if (state is JobsDeletedFailed) {
+              AppUtils().showAlertDialog("Error", state.message);
+            }
           },
           builder: (context, state) {
             if (state is JobsLoading && state.isFirstFetch) {
@@ -117,7 +126,29 @@ class JobsHome extends StatelessWidget {
                                   style: TextStyle(
                                       color: AppColors.textColorDark,
                                       fontSize: 12.sp,
-                                      fontWeight: FontWeight.w400))
+                                      fontWeight: FontWeight.w400)),
+                              buttonDelete("Update this Job", context, () {
+                                Get.to(() => JobsUpdate(
+                                      textEditingControllerCompanyName:
+                                          TextEditingController(
+                                              text: listJobs![i]!.company),
+                                      textEditingControllerCompanyPosition:
+                                          TextEditingController(
+                                              text: listJobs![i]!.position),
+                                      textEditingControllerCompanyLocation:
+                                          TextEditingController(
+                                              text: listJobs![i]!.location),
+                                      workType: listJobs![i]!.workType!,
+                                      status: listJobs![i]!.status!,
+                                    ));
+                              }),
+                              SizedBox(
+                                height: 10.h,
+                              ),
+                              buttonDelete("Delete", context, () {
+                                _jobsBloc
+                                    .add(DeleteJobs(id: listJobs![i]!.id!));
+                              })
                             ],
                           ),
                         );
